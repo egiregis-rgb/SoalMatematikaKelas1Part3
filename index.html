@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Angka - Kuis Matematika Kelas 1 SD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EAF4FF;
+    --bg-soft: #F7FBFF;
+    --purple: #7C5CFC;
+    --purple-dark: #5E3FE0;
+    --pink: #FF6FA5;
+    --yellow: #FFC93C;
+    --green: #2FBF8F;
+    --navy: #26264D;
+    --white: #FFFFFF;
+    --shadow: rgba(38, 38, 77, 0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 8% 12%, rgba(255,201,60,0.25) 0, transparent 40%),
+      radial-gradient(circle at 92% 85%, rgba(255,111,165,0.22) 0, transparent 42%),
+      var(--bg);
+    font-family:'Nunito', sans-serif;
+    color:var(--navy);
+    min-height:100vh;
+    padding:24px 16px 60px;
+  }
+  h1,h2,h3, .display{
+    font-family:'Baloo 2', sans-serif;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+  }
+  /* ---------- HEADER ---------- */
+  .app-header{
+    text-align:center;
+    margin-bottom:28px;
+  }
+  .app-header .eyebrow{
+    display:inline-block;
+    background:var(--white);
+    color:var(--purple-dark);
+    font-weight:800;
+    font-size:13px;
+    letter-spacing:0.08em;
+    padding:6px 16px;
+    border-radius:999px;
+    box-shadow:0 4px 0 var(--shadow);
+    margin-bottom:10px;
+  }
+  .app-header h1{
+    font-size:clamp(28px,6vw,42px);
+    margin:6px 0 4px;
+    color:var(--navy);
+  }
+  .app-header h1 span{color:var(--purple);}
+  .app-header p{
+    margin:0;
+    font-weight:700;
+    color:#5B5B7A;
+    font-size:15px;
+  }
+
+  /* ---------- SCREENS ---------- */
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  /* ---------- MAP / TRAIL ---------- */
+  .summary-bar{
+    background:var(--white);
+    border-radius:20px;
+    padding:14px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:0 6px 0 var(--shadow);
+    margin-bottom:30px;
+    font-weight:800;
+  }
+  .summary-bar .avg-score{
+    color:var(--purple-dark);
+    font-family:'Baloo 2',sans-serif;
+    font-size:22px;
+  }
+  .trail{
+    position:relative;
+    padding:10px 0 20px;
+  }
+  .trail::before{
+    content:"";
+    position:absolute;
+    top:0; bottom:0; left:50%;
+    width:6px;
+    margin-left:-3px;
+    background:repeating-linear-gradient(to bottom, var(--purple) 0 14px, transparent 14px 26px);
+    border-radius:6px;
+    opacity:0.55;
+    z-index:0;
+  }
+  .node-row{
+    position:relative;
+    z-index:1;
+    display:flex;
+    margin-bottom:6px;
+  }
+  .node-row.odd{justify-content:flex-start;}
+  .node-row.even{justify-content:flex-end;}
+  .node-btn{
+    width:120px;
+    background:var(--white);
+    border:none;
+    border-radius:22px;
+    padding:14px 10px 12px;
+    box-shadow:0 6px 0 var(--shadow);
+    cursor:pointer;
+    text-align:center;
+    transition:transform .12s ease;
+    font-family:'Nunito',sans-serif;
+  }
+  .node-row.odd .node-btn{margin-left:6%;}
+  .node-row.even .node-btn{margin-right:6%;}
+  .node-btn:hover{transform:translateY(-3px);}
+  .node-btn:active{transform:translateY(2px); box-shadow:0 2px 0 var(--shadow);}
+  .node-num{
+    width:46px;height:46px;
+    line-height:46px;
+    border-radius:50%;
+    background:var(--purple);
+    color:var(--white);
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:20px;
+    margin:0 auto 6px;
+  }
+  .node-btn.done .node-num{background:var(--green);}
+  .node-label{font-weight:800; font-size:13px; color:var(--navy);}
+  .node-score{
+    margin-top:4px;
+    font-size:15px;
+    font-weight:800;
+    color:var(--pink);
+  }
+  .node-stars{font-size:13px; margin-top:2px;}
+
+  /* ---------- QUIZ ---------- */
+  .quiz-card{
+    background:var(--white);
+    border-radius:26px;
+    padding:26px 22px 30px;
+    box-shadow:0 8px 0 var(--shadow);
+  }
+  .quiz-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+    font-weight:800;
+    color:var(--purple-dark);
+    font-size:14px;
+  }
+  .progress-track{
+    height:12px;
+    border-radius:999px;
+    background:#EDEFFC;
+    overflow:hidden;
+    margin-bottom:22px;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--purple), var(--pink));
+    border-radius:999px;
+    transition:width .3s ease;
+  }
+  .question-text{
+    font-family:'Baloo 2',sans-serif;
+    font-size:clamp(19px,4.4vw,25px);
+    line-height:1.4;
+    margin:0 0 18px;
+    color:var(--navy);
+    text-align:center;
+  }
+  .visual-box{
+    display:flex;
+    justify-content:center;
+    margin-bottom:20px;
+  }
+  .emoji-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    background:var(--bg-soft);
+    border-radius:18px;
+    padding:16px;
+    font-size:34px;
+    max-width:420px;
+  }
+  table.pic-table{
+    border-collapse:separate;
+    border-spacing:8px;
+    background:var(--bg-soft);
+    border-radius:18px;
+    padding:6px;
+  }
+  table.pic-table td{
+    width:52px;height:52px;
+    background:var(--white);
+    border-radius:12px;
+    text-align:center;
+    vertical-align:middle;
+    font-size:28px;
+    box-shadow:inset 0 0 0 2px #E4E9F7;
+  }
+  table.pictograph{
+    border-collapse:separate;
+    border-spacing:0 8px;
+    background:transparent;
+    padding:0;
+    width:100%;
+    max-width:420px;
+  }
+  table.pictograph thead th{
+    font-family:'Baloo 2',sans-serif;
+    font-size:13px;
+    color:var(--white);
+    background:var(--purple);
+    padding:8px 14px;
+    text-align:left;
+  }
+  table.pictograph thead th:first-child{border-radius:10px 0 0 10px;}
+  table.pictograph thead th:last-child{border-radius:0 10px 10px 0;}
+  table.pictograph tbody td{
+    background:var(--white);
+    box-shadow:none;
+    width:auto;
+    height:auto;
+    vertical-align:middle;
+    font-size:inherit;
+  }
+  td.picto-label{
+    font-family:'Nunito',sans-serif;
+    font-weight:800;
+    text-align:left;
+    padding:10px 14px;
+    border-radius:12px 0 0 12px;
+    white-space:nowrap;
+    color:var(--navy);
+    box-shadow:inset 0 0 0 2px #E4E9F7;
+    border-right:none;
+  }
+  td.picto-icons{
+    text-align:left;
+    padding:10px 14px;
+    border-radius:0 12px 12px 0;
+    font-size:22px;
+    letter-spacing:2px;
+    box-shadow:inset 0 0 0 2px #E4E9F7;
+  }
+  .shape-svg-box{
+    background:var(--bg-soft);
+    border-radius:18px;
+    padding:18px 26px;
+  }
+  .options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .opt-btn{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--bg-soft);
+    border:3px solid transparent;
+    border-radius:16px;
+    padding:14px 12px;
+    font-family:'Nunito',sans-serif;
+    font-weight:800;
+    font-size:16px;
+    color:var(--navy);
+    cursor:pointer;
+    text-align:left;
+    transition:all .12s ease;
+  }
+  .opt-btn:hover{border-color:var(--purple);}
+  .opt-btn:disabled{cursor:default;}
+  .opt-btn.selected{
+    background:var(--purple);
+    color:var(--white);
+    border-color:var(--purple-dark);
+  }
+  .opt-letter{
+    width:28px;height:28px;
+    flex:none;
+    border-radius:50%;
+    background:var(--white);
+    color:var(--purple-dark);
+    font-weight:800;
+    text-align:center;
+    line-height:28px;
+    font-size:13px;
+  }
+  .opt-btn.selected .opt-letter{
+    background:var(--yellow);
+    color:var(--navy);
+  }
+  .back-link{
+    display:inline-block;
+    margin-top:18px;
+    font-weight:800;
+    color:var(--purple-dark);
+    cursor:pointer;
+    font-size:14px;
+    background:none;
+    border:none;
+  }
+
+  /* ---------- RESULT ---------- */
+  .result-card{
+    background:var(--white);
+    border-radius:26px;
+    padding:40px 26px;
+    text-align:center;
+    box-shadow:0 8px 0 var(--shadow);
+  }
+  .result-emoji{font-size:64px; margin-bottom:6px;}
+  .score-num{
+    font-family:'Baloo 2',sans-serif;
+    font-size:64px;
+    color:var(--purple);
+    margin:6px 0 0;
+    line-height:1;
+  }
+  .score-scale{
+    font-weight:800;
+    color:#8B8BAA;
+    margin-bottom:16px;
+  }
+  .result-msg{
+    font-family:'Baloo 2',sans-serif;
+    font-size:22px;
+    color:var(--navy);
+    margin:0 0 8px;
+  }
+  .result-sub{
+    font-weight:700;
+    color:#5B5B7A;
+    margin-bottom:26px;
+  }
+  .result-buttons{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .btn{
+    font-family:'Nunito',sans-serif;
+    font-weight:800;
+    font-size:15px;
+    padding:14px 26px;
+    border-radius:16px;
+    border:none;
+    cursor:pointer;
+    transition:transform .12s ease;
+  }
+  .btn:active{transform:translateY(2px);}
+  .btn-primary{
+    background:var(--purple);
+    color:var(--white);
+    box-shadow:0 5px 0 var(--purple-dark);
+  }
+  .btn-secondary{
+    background:var(--bg-soft);
+    color:var(--purple-dark);
+    box-shadow:0 5px 0 #D6DEF7;
+  }
+
+  @media (max-width:480px){
+    .options{grid-template-columns:1fr;}
+    .node-btn{width:104px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="app-header">
+    <span class="eyebrow">KELAS 1 SD &middot; MATEMATIKA</span>
+    <h1>Petualangan <span>Angka</span></h1>
+    <p>Selesaikan 10 sesi untuk jadi Bintang Matematika! ⭐</p>
+  </div>
+
+  <!-- ===================== MAP SCREEN ===================== -->
+  <section id="map-screen" class="screen active">
+    <div class="summary-bar">
+      <div>🎯 Progres kamu</div>
+      <div class="avg-score" id="avg-score-label">Belum ada sesi selesai</div>
+    </div>
+    <div class="trail" id="trail-container"></div>
+  </section>
+
+  <!-- ===================== QUIZ SCREEN ===================== -->
+  <section id="quiz-screen" class="screen">
+    <div class="quiz-card">
+      <div class="quiz-top">
+        <span id="quiz-session-label">Sesi 1</span>
+        <span id="quiz-progress-label">Soal 1/20</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:5%"></div>
+      </div>
+      <p class="question-text" id="question-text">Soal</p>
+      <div class="visual-box" id="visual-box"></div>
+      <div class="options" id="options-box"></div>
+    </div>
+    <button class="back-link" id="back-to-map-from-quiz">← Kembali ke Peta</button>
+  </section>
+
+  <!-- ===================== RESULT SCREEN ===================== -->
+  <section id="result-screen" class="screen">
+    <div class="result-card">
+      <div class="result-emoji" id="result-emoji">🌟</div>
+      <div class="score-scale" id="result-session-label" style="margin-bottom:0;">Skor Sesi 1</div>
+      <div class="score-num" id="result-score">0</div>
+      <div class="score-scale">dari skala 1 - 100</div>
+      <h2 class="result-msg" id="result-message">Hebat!</h2>
+      <p class="result-sub" id="result-sub">Kamu menjawab benar sekian dari 20 soal.</p>
+      <div class="result-buttons">
+        <button class="btn btn-primary" id="retry-btn">🔁 Coba Lagi</button>
+        <button class="btn btn-secondary" id="map-btn">🗺️ Kembali ke Peta</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ======================================================================
+   PETUALANGAN ANGKA — KUIS MATEMATIKA KELAS 1 SD
+   Semua soal & jawaban dihitung otomatis oleh JavaScript (bukan hardcode)
+   sehingga selalu benar dan bervariasi setiap sesi dimainkan.
+   ====================================================================== */
+
+const TOTAL_SESSIONS = 10;
+const QUESTIONS_PER_SESSION = 20;
+
+const EMOJI_SETS = [
+  ['🍎','apel'], ['⭐','bintang'], ['🎈','balon'], ['⚽','bola'],
+  ['🐟','ikan'], ['🌸','bunga'], ['🍪','kue'], ['🚗','mobil'],
+  ['🐝','lebah'], ['🍉','semangka']
+];
+
+const SHAPES = [
+  { name:'Lingkaran', svg:'<circle cx="60" cy="55" r="42" fill="#7C5CFC"/>' },
+  { name:'Persegi', svg:'<rect x="20" y="15" width="80" height="80" rx="6" fill="#FF6FA5"/>' },
+  { name:'Segitiga', svg:'<polygon points="60,12 108,96 12,96" fill="#FFC93C"/>' },
+  { name:'Persegi Panjang', svg:'<rect x="8" y="30" width="104" height="60" rx="6" fill="#2FBF8F"/>' }
+];
+
+const PICTO_ITEMS = [
+  { label:'Mangga', emoji:'🥭' },
+  { label:'Apel', emoji:'🍎' },
+  { label:'Anggur', emoji:'🍇' },
+  { label:'Alpukat', emoji:'🥑' },
+  { label:'Jeruk', emoji:'🍊' },
+  { label:'Pisang', emoji:'🍌' },
+  { label:'Nanas', emoji:'🍍' },
+  { label:'Semangka', emoji:'🍉' }
+];
+
+let bestScores = {}; // {sessionNumber: score}
+let currentSession = 1;
+let currentQuestions = [];
+let currentIndex = 0;
+let correctCount = 0;
+let locked = false;
+
+/* ---------------------- UTIL ---------------------- */
+function randInt(min, max){
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function pickEmojiSet(){
+  return EMOJI_SETS[randInt(0, EMOJI_SETS.length - 1)];
+}
+function buildOptionsForNumber(correct, min, max){
+  const opts = new Set([correct]);
+  let tries = 0;
+  while(opts.size < 4 && tries < 60){
+    tries++;
+    let delta = randInt(-4, 4);
+    if(delta === 0) continue;
+    let val = correct + delta;
+    if(val < min) val = min + Math.abs(delta) % (max - min + 1);
+    if(val > max) val = max - (Math.abs(delta) % (max - min + 1));
+    if(val < min) val = min;
+    if(val > max) val = max;
+    opts.add(val);
+  }
+  let filler = min;
+  while(opts.size < 4 && filler <= max + 20){
+    if(!opts.has(filler)) opts.add(filler);
+    filler++;
+  }
+  return shuffle([...opts].map(String));
+}
+function maxNumForSession(session){
+  return Math.min(20, 5 + Math.round(session * 1.6));
+}
+
+/* ---------------------- GENERATORS ---------------------- */
+function genAddition(maxNum){
+  const a = randInt(1, maxNum);
+  const b = randInt(1, maxNum);
+  const sum = a + b;
+  return {
+    text: `${a} + ${b} = ... ?`,
+    options: buildOptionsForNumber(sum, 0, maxNum * 2 + 2),
+    answer: String(sum)
+  };
+}
+function genSubtraction(maxNum){
+  const a = randInt(2, maxNum);
+  const b = randInt(1, a);
+  const diff = a - b;
+  return {
+    text: `${a} - ${b} = ... ?`,
+    options: buildOptionsForNumber(diff, 0, maxNum),
+    answer: String(diff)
+  };
+}
+function genCompare(maxNum, wantBigger){
+  let a = randInt(1, maxNum);
+  let b = randInt(1, maxNum);
+  while(b === a) b = randInt(1, maxNum);
+  const correctVal = wantBigger ? Math.max(a, b) : Math.min(a, b);
+  const opts = new Set([a, b]);
+  let tries = 0;
+  while(opts.size < 4 && tries < 40){
+    tries++;
+    opts.add(randInt(0, maxNum));
+  }
+  return {
+    text: `Manakah bilangan yang lebih ${wantBigger ? 'BESAR' : 'KECIL'} antara ${a} dan ${b}?`,
+    options: shuffle([...opts].map(String)),
+    answer: String(correctVal)
+  };
+}
+function genUrutan(maxNum){
+  const mode = Math.random() < 0.5 ? 'sebelum' : 'sesudah';
+  const n = randInt(2, Math.max(3, maxNum - 1));
+  const correct = mode === 'sebelum' ? n - 1 : n + 1;
+  return {
+    text: `Bilangan berapakah yang tepat berada ${mode} angka ${n}?`,
+    options: buildOptionsForNumber(correct, 0, maxNum + 3),
+    answer: String(correct)
+  };
+}
+function genParity(maxNum){
+  const askEven = Math.random() < 0.5;
+  const matchParity = n => askEven ? (n % 2 === 0) : (n % 2 !== 0);
+
+  let matching = [];
+  let nonMatching = [];
+  for(let n = 1; n <= maxNum; n++){
+    if(matchParity(n)) matching.push(n); else nonMatching.push(n);
+  }
+  if(matching.length === 0) matching = [askEven ? 2 : 1];
+  let extra = maxNum + 1;
+  while(nonMatching.length < 3){
+    if(!matchParity(extra)) nonMatching.push(extra);
+    extra++;
+  }
+
+  const correct = matching[randInt(0, matching.length - 1)];
+  const distractors = shuffle(nonMatching).slice(0, 3);
+  const options = shuffle([correct, ...distractors].map(String));
+
+  return {
+    text: `Manakah bilangan ${askEven ? 'GENAP' : 'GANJIL'} berikut ini?`,
+    options,
+    answer: String(correct)
+  };
+}
+function genShape(){
+  const shape = SHAPES[randInt(0, SHAPES.length - 1)];
+  return {
+    text: 'Bentuk apakah gambar di bawah ini?',
+    visual: `<div class="shape-svg-box"><svg width="120" height="110" viewBox="0 0 120 110">${shape.svg}</svg></div>`,
+    options: shuffle(SHAPES.map(s => s.name)),
+    answer: shape.name
+  };
+}
+function genCountObjects(maxNum){
+  const [emoji, label] = pickEmojiSet();
+  const count = randInt(3, Math.min(Math.max(maxNum, 6), 14));
+  const row = `<div class="emoji-row">${Array(count).fill(emoji).join(' ')}</div>`;
+  return {
+    text: `Ada berapa banyak gambar ${label} di bawah ini?`,
+    visual: row,
+    options: buildOptionsForNumber(count, 0, 16),
+    answer: String(count)
+  };
+}
+function genTable(maxNum){
+  const rowCount = randInt(3, 4);
+  const chosenItems = shuffle(PICTO_ITEMS).slice(0, rowCount);
+  const maxIconsPerRow = Math.min(8, Math.max(4, Math.round(maxNum / 2)));
+  const rowsData = chosenItems.map(it => ({
+    ...it,
+    count: randInt(1, maxIconsPerRow)
+  }));
+  const targetIdx = randInt(0, rowsData.length - 1);
+  const target = rowsData[targetIdx];
+
+  let html = '<table class="pictograph"><thead><tr><th>Buah</th><th>Banyaknya</th></tr></thead><tbody>';
+  rowsData.forEach(r => {
+    html += `<tr><td class="picto-label">${r.label}</td><td class="picto-icons">${Array(r.count).fill(r.emoji).join(' ')}</td></tr>`;
+  });
+  html += '</tbody></table>';
+
+  return {
+    text: `Banyaknya ${target.label.toLowerCase()} pada diagram gambar tersebut adalah ...`,
+    visual: html,
+    options: buildOptionsForNumber(target.count, 0, maxIconsPerRow + 3),
+    answer: String(target.count)
+  };
+}
+
+const GENERATOR_TYPES = ['add','sub','compareBig','compareSmall','urutan','shape','count','table','parity'];
+
+function generateQuestion(type, maxNum){
+  switch(type){
+    case 'add': return genAddition(maxNum);
+    case 'sub': return genSubtraction(maxNum);
+    case 'compareBig': return genCompare(maxNum, true);
+    case 'compareSmall': return genCompare(maxNum, false);
+    case 'urutan': return genUrutan(maxNum);
+    case 'shape': return genShape();
+    case 'count': return genCountObjects(maxNum);
+    case 'table': return genTable(maxNum);
+    case 'parity': return genParity(maxNum);
+    default: return genAddition(maxNum);
+  }
+}
+
+function generateSessionQuestions(session){
+  const maxNum = maxNumForSession(session);
+  const MIN_TABLE_QUESTIONS = 3;
+
+  let types = [];
+  for(let i = 0; i < MIN_TABLE_QUESTIONS; i++) types.push('table');
+
+  const remainingSlots = QUESTIONS_PER_SESSION - types.length;
+  let pool = [];
+  while(pool.length < remainingSlots){
+    pool = pool.concat(shuffle(GENERATOR_TYPES));
+  }
+  types = types.concat(pool.slice(0, remainingSlots));
+  types = shuffle(types);
+
+  return types.map(type => generateQuestion(type, maxNum));
+}
+
+/* ---------------------- RENDER: MAP ---------------------- */
+function renderMap(){
+  const container = document.getElementById('trail-container');
+  container.innerHTML = '';
+  for(let i = 1; i <= TOTAL_SESSIONS; i++){
+    const row = document.createElement('div');
+    row.className = 'node-row ' + (i % 2 === 1 ? 'odd' : 'even');
+
+    const btn = document.createElement('button');
+    btn.className = 'node-btn' + (bestScores[i] !== undefined ? ' done' : '');
+    btn.innerHTML = `
+      <div class="node-num">${i}</div>
+      <div class="node-label">Sesi ${i}</div>
+      ${bestScores[i] !== undefined
+        ? `<div class="node-score">Skor: ${bestScores[i]}</div><div class="node-stars">${starsFor(bestScores[i])}</div>`
+        : `<div class="node-score">&nbsp;</div>`}
+    `;
+    btn.addEventListener('click', () => startSession(i));
+    row.appendChild(btn);
+    container.appendChild(row);
+  }
+
+  const scores = Object.values(bestScores);
+  const avgLabel = document.getElementById('avg-score-label');
+  if(scores.length === 0){
+    avgLabel.textContent = 'Belum ada sesi selesai';
+  } else {
+    const avg = Math.round(scores.reduce((a,b) => a+b, 0) / scores.length);
+    avgLabel.textContent = `Rata-rata skor: ${avg}/100`;
+  }
+}
+function starsFor(score){
+  if(score >= 90) return '⭐⭐⭐';
+  if(score >= 70) return '⭐⭐';
+  if(score >= 50) return '⭐';
+  return '✨';
+}
+
+/* ---------------------- QUIZ FLOW ---------------------- */
+function startSession(session){
+  currentSession = session;
+  currentQuestions = generateSessionQuestions(session);
+  currentIndex = 0;
+  correctCount = 0;
+  showScreen('quiz-screen');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  locked = false;
+  const q = currentQuestions[currentIndex];
+  document.getElementById('quiz-session-label').textContent = `Sesi ${currentSession}`;
+  document.getElementById('quiz-progress-label').textContent = `Soal ${currentIndex + 1}/${QUESTIONS_PER_SESSION}`;
+  document.getElementById('progress-fill').style.width = `${((currentIndex) / QUESTIONS_PER_SESSION) * 100}%`;
+  document.getElementById('question-text').textContent = q.text;
+
+  const visualBox = document.getElementById('visual-box');
+  visualBox.innerHTML = q.visual ? q.visual : '';
+
+  const optionsBox = document.getElementById('options-box');
+  optionsBox.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.options.forEach((opt, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt-btn';
+    b.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
+    b.addEventListener('click', () => selectAnswer(b, opt, q.answer));
+    optionsBox.appendChild(b);
+  });
+}
+
+function selectAnswer(btnEl, chosen, correctAnswer){
+  if(locked) return;
+  locked = true;
+  btnEl.classList.add('selected');
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+
+  if(chosen === correctAnswer) correctCount++;
+
+  setTimeout(() => {
+    currentIndex++;
+    if(currentIndex >= QUESTIONS_PER_SESSION){
+      finishSession();
+    } else {
+      renderQuestion();
+    }
+  }, 450);
+}
+
+function finishSession(){
+  const score = Math.round((correctCount / QUESTIONS_PER_SESSION) * 100);
+  bestScores[currentSession] = (bestScores[currentSession] !== undefined)
+    ? Math.max(bestScores[currentSession], score)
+    : score;
+
+  document.getElementById('progress-fill').style.width = '100%';
+  document.getElementById('result-session-label').textContent = `Skor Sesi ${currentSession}`;
+  document.getElementById('result-score').textContent = score;
+  document.getElementById('result-sub').textContent =
+    `Kamu menjawab benar ${correctCount} dari ${QUESTIONS_PER_SESSION} soal di Sesi ${currentSession}.`;
+
+  const { emoji, message } = messageFor(score);
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-message').textContent = message;
+
+  showScreen('result-screen');
+}
+
+function messageFor(score){
+  if(score >= 90) return { emoji:'🌟', message:'Luar Biasa! Kamu Bintang Matematika!' };
+  if(score >= 75) return { emoji:'🎉', message:'Hebat! Kerja Bagus Sekali!' };
+  if(score >= 60) return { emoji:'💪', message:'Bagus! Terus Berlatih Ya!' };
+  if(score >= 40) return { emoji:'🌱', message:'Sudah Oke! Ayo Coba Lagi Supaya Lebih Jago!' };
+  return { emoji:'🤗', message:'Jangan Menyerah! Latihan Terus, Pasti Bisa!' };
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ---------------------- EVENTS ---------------------- */
+document.getElementById('back-to-map-from-quiz').addEventListener('click', () => {
+  showScreen('map-screen');
+  renderMap();
+});
+document.getElementById('retry-btn').addEventListener('click', () => startSession(currentSession));
+document.getElementById('map-btn').addEventListener('click', () => {
+  showScreen('map-screen');
+  renderMap();
+});
+
+/* ---------------------- INIT ---------------------- */
+renderMap();
+</script>
+</body>
+</html>
